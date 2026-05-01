@@ -32,7 +32,7 @@
 - `func EncodeInt(u uint64) []byte`
 - `func AppendInt(buf []byte, u uint64) []byte`
 - `func DecodeInt(buf []byte) uint64`
-- `func FillInt(buf []byte, length int) uint64`
+- `func FillInt(buf []byte, length int) []byte`
 - `func ExchangeInt(buf []byte) []byte`
 - `func HashInt(data []byte, key []byte) []byte`
 

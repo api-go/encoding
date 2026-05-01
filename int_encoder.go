@@ -33,7 +33,7 @@ func (enc *IntEncoder) AppendInt(buf []byte, u uint64) []byte {
 	return buf
 }
 
-// FillInt 使用随机字符填充字节切片至指定长度
+// FillInt 使用循环字符序列填充字节切片至指定长度
 func (enc *IntEncoder) FillInt(buf []byte, length int) []byte {
 	currLen := len(buf)
 	if currLen >= length {
@@ -45,14 +45,14 @@ func (enc *IntEncoder) FillInt(buf []byte, length int) []byte {
 		buf = newBuf
 	}
 	buf = buf[:length]
-	radix := uint(enc.radix)
+	radix := int(enc.radix)
 	for i := currLen; i < length; i++ {
-		buf[i] = enc.digits[i%int(radix)]
+		buf[i] = enc.digits[i%radix]
 	}
 	return buf
 }
 
-// ExchangeInt 对字节切片进行位置置换混淆
+// ExchangeInt 对字节切片进行位置交替重排
 func (enc *IntEncoder) ExchangeInt(buf []byte) []byte {
 	size := len(buf)
 	if size <= 1 {
@@ -102,20 +102,20 @@ func (enc *IntEncoder) DecodeInt(buf []byte) uint64 {
 // NewIntEncoder 创建一个新的整数编码器
 func NewIntEncoder(digits string, radix uint8) (*IntEncoder, error) {
 	if len(digits) < int(radix) {
-		return nil, errors.New("int encoder digits is bad")
+		return nil, errors.New("int encoder digits length is less than radix")
 	}
 
 	e := IntEncoder{digits: digits, radix: radix, decodeMap: [256]int{}}
 	for i := 0; i < 256; i++ {
 		e.decodeMap[i] = -1
 	}
-	m := map[int32]bool{}
-	for i, d := range digits {
-		e.decodeMap[digits[i]] = i
-		if m[d] {
-			return nil, errors.New("int encoder digits is repeated " + digits)
+
+	for i := 0; i < int(radix); i++ {
+		d := digits[i]
+		if e.decodeMap[d] != -1 {
+			return nil, errors.New("int encoder digits is repeated: " + digits)
 		}
-		m[d] = true
+		e.decodeMap[d] = i
 	}
 
 	return &e, nil
@@ -146,4 +146,8 @@ func ExchangeInt(buf []byte) []byte {
 
 func HashInt(data []byte, key []byte) []byte {
 	return DefaultIntEncoder.HashInt(data, key)
+}
+
+func FillInt(buf []byte, length int) []byte {
+	return DefaultIntEncoder.FillInt(buf, length)
 }

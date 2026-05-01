@@ -22,25 +22,29 @@ func HexToString(data []byte) string {
 
 // MustUnHex 将 Hex 编码的字节切片解码，出错时返回空字节切片
 func MustUnHex(data []byte) []byte {
-	dst, err := hex.DecodeString(string(data))
+	dst := make([]byte, hex.DecodedLen(len(data)))
+	n, err := hex.Decode(dst, data)
 	if err != nil {
 		return []byte{}
 	}
-	return dst
+	return dst[:n]
 }
 
 // MustUnHexFromString 将 Hex 编码的字符串解码，出错时返回空字节切片
 func MustUnHexFromString(data string) []byte {
-	dst, err := hex.DecodeString(data)
+	dst := make([]byte, hex.DecodedLen(len(data)))
+	n, err := hex.Decode(dst, []byte(data))
 	if err != nil {
 		return []byte{}
 	}
-	return dst
+	return dst[:n]
 }
 
 // UnHex 将 Hex 编码的字节切片解码
 func UnHex(data []byte) ([]byte, error) {
-	return hex.DecodeString(string(data))
+	dst := make([]byte, hex.DecodedLen(len(data)))
+	n, err := hex.Decode(dst, data)
+	return dst[:n], err
 }
 
 // Base64 将数据转换为 Base64 编码的字节切片
