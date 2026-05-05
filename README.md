@@ -18,9 +18,11 @@
 - `func Hex(data []byte) []byte` / `func HexToString(data []byte) string`
 - `func UnHex(data []byte) ([]byte, error)` / `func UnHexFromString(data string) ([]byte, error)`
 - `func Base64(data []byte) []byte` / `func Base64ToString(data []byte) string`
-- `func UnBase64(data []byte) ([]byte, error)` / `func UnBase64FromString(data string) ([]byte, error)`
+- `func Base64Raw(data []byte) []byte` / `func Base64RawToString(data []byte) string` (无填充版本)
+- `func UnBase64(data []byte) ([]byte, error)` / `func UnBase64FromString(data string) ([]byte, error)` (智能兼容填充与无填充)
 - `func UrlBase64(data []byte) []byte` / `func UrlBase64ToString(data []byte) string`
-- `func UnUrlBase64(data []byte) ([]byte, error)` / `func UnUrlBase64FromString(data string) ([]byte, error)`
+- `func UrlBase64Raw(data []byte) []byte` / `func UrlBase64RawToString(data []byte) string` (无填充版本)
+- `func UnUrlBase64(data []byte) ([]byte, error)` / `func UnUrlBase64FromString(data string) ([]byte, error)` (智能兼容填充与无填充)
 
 ### Web 编码 (URL/HTML)
 - `func UrlEncode(data []byte) string`

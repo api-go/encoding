@@ -44,6 +44,18 @@ func Base64ToString(data []byte) string {
 	return base64.StdEncoding.EncodeToString(data)
 }
 
+// Base64Raw 将数据转换为无填充的 Base64 编码的字节切片
+func Base64Raw(data []byte) []byte {
+	buf := make([]byte, base64.RawStdEncoding.EncodedLen(len(data)))
+	base64.RawStdEncoding.Encode(buf, data)
+	return buf
+}
+
+// Base64RawToString 将数据转换为无填充的 Base64 编码的字符串
+func Base64RawToString(data []byte) string {
+	return base64.RawStdEncoding.EncodeToString(data)
+}
+
 // UrlBase64 将数据转换为 URL 安全的 Base64 编码的字节切片
 func UrlBase64(data []byte) []byte {
 	buf := make([]byte, base64.URLEncoding.EncodedLen(len(data)))
@@ -56,28 +68,56 @@ func UrlBase64ToString(data []byte) string {
 	return base64.URLEncoding.EncodeToString(data)
 }
 
-// UnBase64 将 Base64 编码的字节切片解码
+// UrlBase64Raw 将数据转换为 URL 安全且无填充的 Base64 编码的字节切片
+func UrlBase64Raw(data []byte) []byte {
+	buf := make([]byte, base64.RawURLEncoding.EncodedLen(len(data)))
+	base64.RawURLEncoding.Encode(buf, data)
+	return buf
+}
+
+// UrlBase64RawToString 将数据转换为 URL 安全且无填充的 Base64 编码的字符串
+func UrlBase64RawToString(data []byte) string {
+	return base64.RawURLEncoding.EncodeToString(data)
+}
+
+// UnBase64 将 Base64 编码的字节切片解码（自动兼容有无填充）
 func UnBase64(data []byte) ([]byte, error) {
-	dbuf := make([]byte, base64.StdEncoding.DecodedLen(len(data)))
-	n, err := base64.StdEncoding.Decode(dbuf, data)
+	if len(data) > 0 && data[len(data)-1] == '=' {
+		dbuf := make([]byte, base64.StdEncoding.DecodedLen(len(data)))
+		n, err := base64.StdEncoding.Decode(dbuf, data)
+		return dbuf[:n], err
+	}
+	dbuf := make([]byte, base64.RawStdEncoding.DecodedLen(len(data)))
+	n, err := base64.RawStdEncoding.Decode(dbuf, data)
 	return dbuf[:n], err
 }
 
-// UnBase64FromString 将 Base64 编码的字符串解码
+// UnBase64FromString 将 Base64 编码的字符串解码（自动兼容有无填充）
 func UnBase64FromString(data string) ([]byte, error) {
-	return base64.StdEncoding.DecodeString(data)
+	if len(data) > 0 && data[len(data)-1] == '=' {
+		return base64.StdEncoding.DecodeString(data)
+	}
+	return base64.RawStdEncoding.DecodeString(data)
 }
 
-// UnUrlBase64 将 URL 安全的 Base64 编码的字节切片解码
+// UnUrlBase64 将 URL 安全的 Base64 编码的字节切片解码（自动兼容有无填充）
 func UnUrlBase64(data []byte) ([]byte, error) {
-	dbuf := make([]byte, base64.URLEncoding.DecodedLen(len(data)))
-	n, err := base64.URLEncoding.Decode(dbuf, data)
+	if len(data) > 0 && data[len(data)-1] == '=' {
+		dbuf := make([]byte, base64.URLEncoding.DecodedLen(len(data)))
+		n, err := base64.URLEncoding.Decode(dbuf, data)
+		return dbuf[:n], err
+	}
+	dbuf := make([]byte, base64.RawURLEncoding.DecodedLen(len(data)))
+	n, err := base64.RawURLEncoding.Decode(dbuf, data)
 	return dbuf[:n], err
 }
 
-// UnUrlBase64FromString 将 URL 安全的 Base64 编码的字符串解码
+// UnUrlBase64FromString 将 URL 安全的 Base64 编码的字符串解码（自动兼容有无填充）
 func UnUrlBase64FromString(data string) ([]byte, error) {
-	return base64.URLEncoding.DecodeString(data)
+	if len(data) > 0 && data[len(data)-1] == '=' {
+		return base64.URLEncoding.DecodeString(data)
+	}
+	return base64.RawURLEncoding.DecodeString(data)
 }
 
 // UrlEncode 对数据进行 URL 编码

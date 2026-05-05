@@ -1,5 +1,13 @@
 # Changelog: @go/encoding
 
+## [v1.1.0] - 2026-05-06
+
+### Added
+- **Base64 无填充支持**：新增 `Base64Raw`、`Base64RawToString`、`UrlBase64Raw`、`UrlBase64RawToString` 接口，支持生成不带填充符（`=`）的编码。
+
+### Changed
+- **智能解码升级**：升级了 `UnBase64` 与 `UnUrlBase64` 系列函数，通过 O(1) 零分配检测自动兼容“带填充”与“无填充”的输入数据，无需额外调用 Raw 解码接口。
+
 ## [v1.0.6] - 2026-05-06
 
 ### Changed

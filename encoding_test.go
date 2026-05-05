@@ -40,16 +40,37 @@ func TestBase64(t *testing.T) {
 	if !bytes.Equal(cast.As(encoding.UnBase64FromString(enc)), data) {
 		t.Error("UnBase64FromString with cast.As failed")
 	}
+
+	// Raw (Unpadded)
+	rawEnc := encoding.Base64RawToString(data)
+	if bytes.HasSuffix([]byte(rawEnc), []byte("=")) {
+		t.Error("Base64Raw should not have padding")
+	}
+	rawDec, err := encoding.UnBase64FromString(rawEnc)
+	if err != nil || !bytes.Equal(data, rawDec) {
+		t.Error("Base64Raw smart decoding failed")
+	}
 	
 	// URL
-	uEnc := encoding.UrlBase64ToString([]byte("hello/world+"))
+	uData := []byte("hello/world+")
+	uEnc := encoding.UrlBase64ToString(uData)
 	uDec, _ := encoding.UnUrlBase64([]byte(uEnc))
-	if !bytes.Equal([]byte("hello/world+"), uDec) {
+	if !bytes.Equal(uData, uDec) {
 		t.Error("UrlBase64 roundtrip failed")
 	}
 
-	if !bytes.Equal(cast.As(encoding.UnUrlBase64FromString(uEnc)), []byte("hello/world+")) {
+	if !bytes.Equal(cast.As(encoding.UnUrlBase64FromString(uEnc)), uData) {
 		t.Error("UnUrlBase64FromString with cast.As failed")
+	}
+
+	// URL Raw (Unpadded)
+	uRawEnc := encoding.UrlBase64RawToString(uData)
+	if bytes.HasSuffix([]byte(uRawEnc), []byte("=")) {
+		t.Error("UrlBase64Raw should not have padding")
+	}
+	uRawDec, err := encoding.UnUrlBase64FromString(uRawEnc)
+	if err != nil || !bytes.Equal(uData, uRawDec) {
+		t.Error("UrlBase64Raw smart decoding failed")
 	}
 }
 
