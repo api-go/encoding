@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"testing"
 
+	"apigo.cc/go/cast"
 	"apigo.cc/go/encoding"
 )
 
@@ -16,12 +17,12 @@ func TestHex(t *testing.T) {
 		t.Fatal("Hex roundtrip failed")
 	}
 
-	if !bytes.Equal(encoding.MustUnHexFromString(encoded), data) {
-		t.Error("MustUnHexFromString failed")
+	if !bytes.Equal(cast.As(encoding.UnHexFromString(encoded)), data) {
+		t.Error("UnHexFromString with cast.As failed")
 	}
 
-	if len(encoding.MustUnHexFromString("!@#$")) != 0 {
-		t.Error("MustUnHexFromString should return empty for invalid hex chars")
+	if len(cast.As(encoding.UnHexFromString("!@#$"))) != 0 {
+		t.Error("UnHexFromString should return empty for invalid hex chars with cast.As")
 	}
 }
 
@@ -36,8 +37,8 @@ func TestBase64(t *testing.T) {
 		t.Error("Base64 roundtrip failed")
 	}
 	
-	if !bytes.Equal(encoding.MustUnBase64FromString(enc), data) {
-		t.Error("MustUnBase64FromString failed")
+	if !bytes.Equal(cast.As(encoding.UnBase64FromString(enc)), data) {
+		t.Error("UnBase64FromString with cast.As failed")
 	}
 	
 	// URL
@@ -46,6 +47,10 @@ func TestBase64(t *testing.T) {
 	if !bytes.Equal([]byte("hello/world+"), uDec) {
 		t.Error("UrlBase64 roundtrip failed")
 	}
+
+	if !bytes.Equal(cast.As(encoding.UnUrlBase64FromString(uEnc)), []byte("hello/world+")) {
+		t.Error("UnUrlBase64FromString with cast.As failed")
+	}
 }
 
 // --- Web ---
@@ -53,17 +58,17 @@ func TestWebEncoding(t *testing.T) {
 	// URL
 	data := []byte("a b+c")
 	enc := encoding.UrlEncode(data)
-	if !bytes.Equal(encoding.MustUnUrlEncode(enc), data) {
+	if !bytes.Equal(cast.As(encoding.UnUrlEncode(enc)), data) {
 		t.Error("UrlEncode roundtrip failed")
 	}
-	if len(encoding.MustUnUrlEncode("%ZZ")) != 0 {
-		t.Error("MustUnUrlEncode should return empty for invalid input")
+	if len(cast.As(encoding.UnUrlEncode("%ZZ"))) != 0 {
+		t.Error("UnUrlEncode should return empty for invalid input with cast.As")
 	}
 
 	// HTML
 	htmlData := []byte("<script>")
 	escaped := encoding.HtmlEscape(htmlData)
-	if encoding.MustUnHtmlEscape(escaped) != string(htmlData) {
+	if encoding.HtmlUnescape(escaped) != string(htmlData) {
 		t.Error("HtmlEscape roundtrip failed")
 	}
 }

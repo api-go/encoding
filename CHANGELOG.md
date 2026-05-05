@@ -1,5 +1,18 @@
 # Changelog: @go/encoding
 
+## [v1.0.6] - 2026-05-06
+
+### Changed
+- **设计哲学对齐**：全面废除 `Must` 前缀函数，改为配合 `go/cast` 的 `As` 函数消除摩擦，提升代码语义化。
+- **API 重命名**：`MustUnHtmlEscape` 重命名为 `HtmlUnescape`，使其符合标准 API 习惯且保持 frictionless。
+
+### Added
+- **API 补全**：新增 `UnHexFromString`、`UnBase64FromString`、`UnUrlBase64FromString` 与 `UnUrlEncode` 异步错误返回版本。
+- **依赖对齐**：引入 `apigo.cc/go/cast` 依赖以支持消除摩擦能力。
+
+## [v1.0.5] - 2026-05-01
+- (同步版本号)
+
 ## [v1.0.4] - 2026-05-01
 
 ### Changed
