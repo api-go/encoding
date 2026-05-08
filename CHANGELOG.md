@@ -1,5 +1,10 @@
 # Changelog: @go/encoding
 
+## [v1.1.1] - 2026-05-08
+
+### Added
+- **文档补全**：在 README 中补充了 `SortJoin` 接口的详细说明，该接口用于 Map 或 Struct 的排序拼接（签名场景）。
+
 ## [v1.1.0] - 2026-05-06
 
 ### Added

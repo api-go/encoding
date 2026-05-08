@@ -1,7 +1,7 @@
 # Test Report: @go/encoding
 
 ## 📋 测试概览
-- **测试时间**: 2026-05-06
+- **测试时间**: 2026-05-08
 - **测试环境**: darwin/amd64
 - **Go 版本**: 1.25.0
 
@@ -11,6 +11,7 @@
 | `TestHex` | PASS | Hex 编解码往返一致性，配合 `cast.As` 消除摩擦测试。 |
 | `TestBase64` | PASS | Standard/URL Base64 编解码一致性，`Un...FromString` 补全测试。 |
 | `TestWebEncoding` | PASS | URL 编解码、HTML 转义反转义往返测试。 |
+| `TestSortJoin` | PASS | Map 与 Struct 的排序拼接测试，验证签名场景。 |
 | `TestUtf8` | PASS | UTF-8 校验逻辑测试。 |
 | `TestIntEncoder` | PASS | 包含正常编解码、FillInt 补齐、ExchangeInt 置换、HashInt 确定性测试。 |
 

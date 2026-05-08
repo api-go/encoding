@@ -5,7 +5,11 @@ import (
 	"encoding/hex"
 	"html"
 	"net/url"
+	"sort"
+	"strings"
 	"unicode/utf8"
+
+	"apigo.cc/go/cast"
 )
 
 // Hex 将数据转换为 Hex 编码的字节切片
@@ -147,4 +151,42 @@ func HtmlUnescape(data string) string {
 // Utf8Valid 检查字节切片是否为有效的 UTF-8 编码
 func Utf8Valid(data []byte) bool {
 	return utf8.Valid(data)
+}
+
+// SortJoin 将 Map 或 Struct 转换为排序并拼接后的字符串 (常用于签名)
+func SortJoin(v any, separator, connector string, urlEncode bool) string {
+	var m map[string]any
+	if vm, ok := v.(map[string]any); ok {
+		m = vm
+	} else if v != nil {
+		cast.Convert(&m, v)
+	}
+
+	if len(m) == 0 {
+		return ""
+	}
+
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	var builder strings.Builder
+	for i, k := range keys {
+		if i > 0 {
+			builder.WriteString(separator)
+		}
+		val := cast.String(m[k])
+		if urlEncode {
+			builder.WriteString(url.QueryEscape(k))
+			builder.WriteString(connector)
+			builder.WriteString(url.QueryEscape(val))
+		} else {
+			builder.WriteString(k)
+			builder.WriteString(connector)
+			builder.WriteString(val)
+		}
+	}
+	return builder.String()
 }

@@ -103,3 +103,33 @@ func TestUtf8(t *testing.T) {
 		t.Error("Invalid UTF-8 should fail")
 	}
 }
+
+// --- SortJoin ---
+func TestSortJoin(t *testing.T) {
+	m := map[string]any{
+		"B": 2,
+		"A": 1,
+		"C": "hello world",
+	}
+
+	// Test Map
+	res := encoding.SortJoin(m, "&", "=", true)
+	expected := "A=1&B=2&C=hello+world"
+	if res != expected {
+		t.Errorf("SortJoin Map failed: expected %s, got %s", expected, res)
+	}
+
+	// Test Struct
+	type User struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+		ID   string
+	}
+	u := User{Name: "Alice", Age: 30, ID: "123"}
+	resStruct := encoding.SortJoin(u, ";", ":", false)
+	// Keys: age, name, ID. Sorted: ID, age, name
+	expectedStruct := "ID:123;age:30;name:Alice"
+	if resStruct != expectedStruct {
+		t.Errorf("SortJoin Struct failed: expected %s, got %s", expectedStruct, resStruct)
+	}
+}

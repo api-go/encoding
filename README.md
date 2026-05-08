@@ -29,6 +29,11 @@
 - `func UnUrlEncode(data string) ([]byte, error)`
 - `func HtmlEscape(data []byte) string`
 - `func HtmlUnescape(data string) string`
+- `func Utf8Valid(data []byte) bool`
+
+### 签名工具 (Signature Utils)
+- `func SortJoin(v any, separator, connector string, urlEncode bool) string`
+  将 Map 或 Struct 转换为排序并拼接后的字符串。常用于生成签名原串。支持自动 URL 编码。
 
 ### 整数与自定义进制 (IntEncoder)
 - `func EncodeInt(u uint64) []byte`
