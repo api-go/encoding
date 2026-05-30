@@ -1,5 +1,10 @@
 # Changelog: @go/encoding
 
+## [v1.3.2] - 2026-05-30
+
+### Added
+- **JSMOD 注册**：将核心编解码能力注册到 `jsmod`，支持在 JS 环境中调用 Base64, Hex, URL, HTML 及 SortJoin 等能力。
+
 ## [v1.1.1] - 2026-05-08
 
 ### Added
