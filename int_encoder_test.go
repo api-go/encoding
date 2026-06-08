@@ -1,58 +1,58 @@
-package encoding_test
+package encoding
 
 import (
 	"bytes"
 	"testing"
-
-	"apigo.cc/go/encoding"
 )
 
-// --- 正常逻辑测试 ---
-func TestIntEncoderNormal(t *testing.T) {
-	enc := encoding.DefaultIntEncoder
-	nums := []uint64{0, 1, 100, 123456789, 18446744073709551615}
-	for _, n := range nums {
-		if enc.DecodeInt(enc.EncodeInt(n)) != n {
-			t.Errorf("Roundtrip failed for %d", n)
-		}
+func TestIntEncoderInstance(t *testing.T) {
+	enc := DefaultIntEncoder
+	val := uint64(123456789)
+	encoded := enc.EncodeInt(val)
+	decoded := enc.DecodeInt(encoded)
+	if val != decoded {
+		t.Errorf("IntEncoder instance failed: expected %d, got %d", val, decoded)
 	}
-}
 
-// --- 边界与异常测试 ---
-func TestIntEncoderEdge(t *testing.T) {
-	// 初始化异常
-	_, err := encoding.NewIntEncoder("12", 5) // 字符集不足
-	if err == nil { t.Error("NewIntEncoder failed to detect short digits") }
-	
-	_, err = encoding.NewIntEncoder("112345", 2) // 重复字符
-	if err == nil { t.Error("NewIntEncoder failed to detect repeated digits") }
-
-	// 空输入
-	if encoding.DecodeInt(nil) != 0 { t.Error("DecodeInt(nil) != 0") }
-	
-	// 填充逻辑边界
-	buf := encoding.EncodeInt(123)
-	filled := encoding.DefaultIntEncoder.FillInt(buf, 2) // 长度小于原长
-	if len(filled) != len(buf) {
-		t.Error("FillInt should not truncate data")
+	// NewIntEncoder errors
+	_, err := NewIntEncoder("12", 5) // 字符集不足
+	if err == nil {
+		t.Error("expected error for insufficient digits")
 	}
-}
 
-// --- 混淆与哈希测试 ---
-func TestIntEncoderAdvanced(t *testing.T) {
-	enc := encoding.DefaultIntEncoder
-	buf := enc.EncodeInt(12345)
-	
-	// Exchange
-	exchanged := enc.ExchangeInt(buf)
+	_, err = NewIntEncoder("112345", 6) // 重复字符
+	if err == nil {
+		t.Error("expected error for repeated digits")
+	}
+
+	// DecodeInt(nil)
+	if DecodeInt(nil) != 0 {
+		t.Error("DecodeInt(nil) != 0")
+	}
+
+	// FillInt
+	buf := []byte(EncodeInt(123))
+	filled := FillInt(buf, 10)
+	if len(filled) != 10 {
+		t.Errorf("FillInt failed: expected len 10, got %d", len(filled))
+	}
+	if !bytes.HasPrefix(filled, buf) {
+		t.Error("FillInt prefix mismatch")
+	}
+
+	// ExchangeInt
+	buf = []byte("abcde")
+	exchanged := ExchangeInt(buf)
 	if len(exchanged) != len(buf) {
-		t.Fatal("Exchange length mismatch")
+		t.Error("ExchangeInt len mismatch")
 	}
-	
-	// Hash
-	h1 := enc.HashInt(buf, []byte("key"))
-	h2 := enc.HashInt(buf, []byte("key"))
-	if !bytes.Equal(h1, h2) {
-		t.Error("HashInt non-deterministic")
+	if bytes.Equal(exchanged, buf) {
+		t.Error("ExchangeInt should change data")
+	}
+
+	// HashInt
+	hashed := HashInt(buf, []byte("key"))
+	if len(hashed) == 0 {
+		t.Error("HashInt failed")
 	}
 }

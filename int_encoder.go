@@ -4,6 +4,8 @@ import (
 	"crypto/hmac"
 	"crypto/sha512"
 	"errors"
+
+	"apigo.cc/go/cast"
 )
 
 // IntEncoder 提供整数与字节切片之间的自定义进制转换
@@ -13,9 +15,9 @@ type IntEncoder struct {
 	decodeMap [256]int
 }
 
-// EncodeInt 将整数转换为字节切片
-func (enc *IntEncoder) EncodeInt(u uint64) []byte {
-	return enc.AppendInt(nil, u)
+// EncodeInt 将整数转换为字符串
+func (enc *IntEncoder) EncodeInt(u uint64) string {
+	return string(enc.AppendInt(nil, u))
 }
 
 // AppendInt 将整数追加到已有字节切片中
@@ -33,8 +35,9 @@ func (enc *IntEncoder) AppendInt(buf []byte, u uint64) []byte {
 	return buf
 }
 
-// FillInt 使用循环字符序列填充字节切片至指定长度
-func (enc *IntEncoder) FillInt(buf []byte, length int) []byte {
+// FillInt 使用循环字符序列填充数据至指定长度
+func (enc *IntEncoder) FillInt(data any, length int) []byte {
+	buf := cast.To[[]byte](data)
 	currLen := len(buf)
 	if currLen >= length {
 		return buf
@@ -52,8 +55,9 @@ func (enc *IntEncoder) FillInt(buf []byte, length int) []byte {
 	return buf
 }
 
-// ExchangeInt 对字节切片进行位置交替重排
-func (enc *IntEncoder) ExchangeInt(buf []byte) []byte {
+// ExchangeInt 对数据进行位置交替重排
+func (enc *IntEncoder) ExchangeInt(data any) []byte {
+	buf := cast.To[[]byte](data)
 	size := len(buf)
 	if size <= 1 {
 		return buf
@@ -76,15 +80,16 @@ func (enc *IntEncoder) ExchangeInt(buf []byte) []byte {
 	return buf2
 }
 
-// HashInt 对字节切片进行 HMAC-SHA512 哈希
-func (enc *IntEncoder) HashInt(data []byte, key []byte) []byte {
-	hash := hmac.New(sha512.New, key)
-	hash.Write(data)
+// HashInt 对数据进行 HMAC-SHA512 哈希
+func (enc *IntEncoder) HashInt(data any, key any) []byte {
+	hash := hmac.New(sha512.New, cast.To[[]byte](key))
+	hash.Write(cast.To[[]byte](data))
 	return hash.Sum([]byte{})
 }
 
-// DecodeInt 从字节切片解码为整数
-func (enc *IntEncoder) DecodeInt(buf []byte) uint64 {
+// DecodeInt 从数据解码为整数
+func (enc *IntEncoder) DecodeInt(data any) uint64 {
+	buf := cast.To[[]byte](data)
 	radix := uint64(enc.radix)
 	if buf == nil {
 		return 0
@@ -125,9 +130,9 @@ func NewIntEncoder(digits string, radix uint8) (*IntEncoder, error) {
 var DefaultIntEncoder, _ = NewIntEncoder("9ukH1grX75TQS6LzpFAjIivsdZoO0mc8NBwnyYDhtMWEC2V3KaGxfJRPqe4lbU", 62)
 var OrderedIntEncoder, _ = NewIntEncoder("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 62)
 
-// EncodeInt 使用默认编码器将整数转换为字节切片
-func EncodeInt(u uint64) []byte {
-	return DefaultIntEncoder.AppendInt(nil, u)
+// EncodeInt 使用默认编码器将整数转换为字符串
+func EncodeInt(u uint64) string {
+	return DefaultIntEncoder.EncodeInt(u)
 }
 
 // AppendInt 使用默认编码器将整数追加到已有字节切片中
@@ -135,19 +140,22 @@ func AppendInt(buf []byte, u uint64) []byte {
 	return DefaultIntEncoder.AppendInt(buf, u)
 }
 
-// DecodeInt 使用默认编码器从字节切片解码为整数
-func DecodeInt(buf []byte) uint64 {
-	return DefaultIntEncoder.DecodeInt(buf)
+// DecodeInt 使用默认编码器从数据解码为整数
+func DecodeInt(data any) uint64 {
+	return DefaultIntEncoder.DecodeInt(data)
 }
 
-func ExchangeInt(buf []byte) []byte {
-	return DefaultIntEncoder.ExchangeInt(buf)
+// ExchangeInt 使用默认编码器对数据进行位置交替重排
+func ExchangeInt(data any) []byte {
+	return DefaultIntEncoder.ExchangeInt(data)
 }
 
-func HashInt(data []byte, key []byte) []byte {
+// HashInt 对数据进行 HMAC-SHA512 哈希
+func HashInt(data any, key any) []byte {
 	return DefaultIntEncoder.HashInt(data, key)
 }
 
-func FillInt(buf []byte, length int) []byte {
-	return DefaultIntEncoder.FillInt(buf, length)
+// FillInt 使用默认编码器填充数据至指定长度
+func FillInt(data any, length int) []byte {
+	return DefaultIntEncoder.FillInt(data, length)
 }
