@@ -18,7 +18,9 @@ func init() {
 		"HTMLUnescape":          HTMLUnescape,
 		"UTF8Valid":             UTF8Valid,
 		"SortJoin":              SortJoin,
-		"EncodeInt":             EncodeInt,
+		"EncodeInt": func(u uint64) string {
+			return string(EncodeInt(u))
+		},
 		"DecodeInt":             DecodeInt,
 		"FillInt":               FillInt,
 		"ExchangeInt":           ExchangeInt,

@@ -1,5 +1,12 @@
 # Changelog: @go/encoding
 
+## v1.5.2 (2026-06-08)
+- **回滚与修复**: 修正了 `v1.5.1` 中架构设计的失误，将 Go 核心层的 `EncodeInt` 及 `IntEncoder.EncodeInt` 返回值从 `string` 恢复为 `[]byte`，彻底消除由于频繁强制转换导致的内存逃逸，恢复了高频并发场景下的零拷贝性能基准。
+- **JS 智能桥接**: 通过在 `js_export.go` 的注册阶段采用匿名闭包函数 `func(u uint64) string`，完美兼顾了底层的高效性和 JS 环境面向字符串开发的友好体验。
+
+## v1.5.1 (2026-06-08)
+- **JS 对齐**: 将所有注册到 `jsmod` 的导出方法名统一为 PascalCase，并将缩写名称（如 URL, HTML, UTF8）全大写，以消除 JS 与 Go 调用体感上的摩擦。合并了冗余的 `xxxToString` 方法。
+
 ## [v1.3.2] - 2026-05-30
 
 ### Added

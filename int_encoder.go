@@ -15,9 +15,9 @@ type IntEncoder struct {
 	decodeMap [256]int
 }
 
-// EncodeInt 将整数转换为字符串
-func (enc *IntEncoder) EncodeInt(u uint64) string {
-	return string(enc.AppendInt(nil, u))
+// EncodeInt 将整数转换为字节切片
+func (enc *IntEncoder) EncodeInt(u uint64) []byte {
+	return enc.AppendInt(nil, u)
 }
 
 // AppendInt 将整数追加到已有字节切片中
@@ -130,8 +130,8 @@ func NewIntEncoder(digits string, radix uint8) (*IntEncoder, error) {
 var DefaultIntEncoder, _ = NewIntEncoder("9ukH1grX75TQS6LzpFAjIivsdZoO0mc8NBwnyYDhtMWEC2V3KaGxfJRPqe4lbU", 62)
 var OrderedIntEncoder, _ = NewIntEncoder("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 62)
 
-// EncodeInt 使用默认编码器将整数转换为字符串
-func EncodeInt(u uint64) string {
+// EncodeInt 使用默认编码器将整数转换为字节切片
+func EncodeInt(u uint64) []byte {
 	return DefaultIntEncoder.EncodeInt(u)
 }
 
