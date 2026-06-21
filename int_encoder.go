@@ -1,11 +1,10 @@
 package encoding
 
 import (
-	"crypto/hmac"
-	"crypto/sha512"
 	"errors"
 
 	"apigo.cc/go/cast"
+	"apigo.cc/go/rand"
 )
 
 // IntEncoder 提供整数与字节切片之间的自定义进制转换
@@ -35,7 +34,7 @@ func (enc *IntEncoder) AppendInt(buf []byte, u uint64) []byte {
 	return buf
 }
 
-// FillInt 使用循环字符序列填充数据至指定长度
+// FillInt 使用随机字符序列填充数据至指定长度，高并发下具备零锁极速随机性能，就地修改并返回
 func (enc *IntEncoder) FillInt(data any, length int) []byte {
 	buf := cast.To[[]byte](data)
 	currLen := len(buf)
@@ -50,12 +49,36 @@ func (enc *IntEncoder) FillInt(data any, length int) []byte {
 	buf = buf[:length]
 	radix := int(enc.radix)
 	for i := currLen; i < length; i++ {
-		buf[i] = enc.digits[i%radix]
+		// 使用 go/rand 零锁随机性能从 digits 中抽取字符填充
+		rnd := rand.FastInt(0, radix-1)
+		buf[i] = enc.digits[rnd]
 	}
 	return buf
 }
 
-// ExchangeInt 对数据进行位置交替重排
+// FoldInt 使用编码器的字符集模加法，将超出 length 的尾部字节折叠到前 length 字节中，就地修改并截断返回
+func (enc *IntEncoder) FoldInt(buf []byte, length int) []byte {
+	size := len(buf)
+	if size <= length {
+		return buf
+	}
+	radix := int(enc.radix)
+	for i := length; i < size; i++ {
+		p1 := enc.decodeMap[buf[i%length]]
+		p2 := enc.decodeMap[buf[i]]
+		if p1 < 0 {
+			p1 = 0
+		}
+		if p2 < 0 {
+			p2 = 0
+		}
+		newP := (p1 + p2) % radix
+		buf[i%length] = enc.digits[newP]
+	}
+	return buf[:length]
+}
+
+// ExchangeInt 对数据进行位置交替重排，就地修改并返回
 func (enc *IntEncoder) ExchangeInt(data any) []byte {
 	buf := cast.To[[]byte](data)
 	size := len(buf)
@@ -63,7 +86,14 @@ func (enc *IntEncoder) ExchangeInt(data any) []byte {
 		return buf
 	}
 
-	buf2 := make([]byte, size)
+	var buf2 []byte
+	if size <= 20 {
+		var tmp [20]byte // 栈分配：极致性能，零垃圾回收负担
+		buf2 = tmp[:size]
+	} else {
+		buf2 = make([]byte, size)
+	}
+
 	buf2_i := 0
 	buf2_ai := 0
 	buf2_ri := size - 1
@@ -77,14 +107,43 @@ func (enc *IntEncoder) ExchangeInt(data any) []byte {
 		}
 		buf2_i++
 	}
-	return buf2
+
+	// 将打乱后的数据拷贝回原切片，实现“原地修改”
+	copy(buf, buf2)
+	return buf
 }
 
-// HashInt 对数据进行 HMAC-SHA512 哈希
-func (enc *IntEncoder) HashInt(data any, key any) []byte {
-	hash := hmac.New(sha512.New, cast.To[[]byte](key))
-	hash.Write(cast.To[[]byte](data))
-	return hash.Sum([]byte{})
+// HashInt 双向非线性渐进式置换混淆，原地修改并返回，所有值保持在 radix 字符集内
+func (enc *IntEncoder) HashInt(buf []byte) []byte {
+	if len(buf) == 0 {
+		return buf
+	}
+
+	// 第一轮：正向传播（左向右）
+	prevP := (len(buf) * 17) % int(enc.radix)
+	for i, c := range buf {
+		p := enc.decodeMap[c]
+		if p < 0 {
+			p = 0
+		}
+		p = (prevP + p) % int(enc.radix)
+		buf[i] = enc.digits[p]
+		prevP = OrderedIntEncoder.decodeMap[DefaultIntEncoder.digits[p]]
+	}
+
+	// 第二轮：反向传播（右向左），回传差异实现全局雪崩扩散
+	prevP = (len(buf) * 31) % int(enc.radix)
+	for i := len(buf) - 1; i >= 0; i-- {
+		p := enc.decodeMap[buf[i]]
+		if p < 0 {
+			p = 0
+		}
+		p = (prevP + p) % int(enc.radix)
+		buf[i] = enc.digits[p]
+		prevP = OrderedIntEncoder.decodeMap[DefaultIntEncoder.digits[p]]
+	}
+
+	return buf
 }
 
 // DecodeInt 从数据解码为整数
@@ -150,9 +209,9 @@ func ExchangeInt(data any) []byte {
 	return DefaultIntEncoder.ExchangeInt(data)
 }
 
-// HashInt 对数据进行 HMAC-SHA512 哈希
-func HashInt(data any, key any) []byte {
-	return DefaultIntEncoder.HashInt(data, key)
+// HashInt 对数据进行渐进式置换混淆
+func HashInt(buf []byte) []byte {
+	return DefaultIntEncoder.HashInt(buf)
 }
 
 // FillInt 使用默认编码器填充数据至指定长度

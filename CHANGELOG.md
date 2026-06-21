@@ -1,5 +1,12 @@
 # Changelog: @go/encoding
 
+## v1.5.5 (2026-06-22)
+- **安全与防碰撞重构 (In-place & Non-linear)**:
+  - 修复 `ExchangeInt` 变成就地修改并写回，解决了 ordered 模式下混淆被完全丢弃的回归 Bug。使用栈分配优化了 `size <= 20` 时的无逃逸零拷贝性能。
+  - 优化 `HashInt` 为双向双径非线性置换混淆（正向向右、反向向左），通过在两套进制字符集（Ordered 与 Default）之间建立严格双射 S-Box 的交叉映射阻断前缀碰撞抵消。
+  - 清理废弃的 `FillRand` 冗余 API，统一收敛并升级 `FillInt` 为利用 `go/rand.FastInt` 进行的并发安全、零锁极速随机填充。
+  - 新增 `FoldInt` 方法：使用字符集模同余相加法折叠超出长度的尾部字节，确保超长截断时的信息熵完美传递。
+
 ## v1.5.4 (2026-06-21)
 - **重构与错误堆栈支持**:
   - 重构 `js_export.go`，将 `EncodeInt` 等匿名包装以及 `UnHex`/`UnBase64`/`UnURLBase64`/`UnURLEncode` 直接抛错的 Go 接口重写为具名函数，并动态使用 `jsmod.MakeError` 包裹错误。

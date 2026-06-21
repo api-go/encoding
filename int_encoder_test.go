@@ -42,16 +42,18 @@ func TestIntEncoderInstance(t *testing.T) {
 
 	// ExchangeInt
 	buf = []byte("abcde")
+	orig := make([]byte, len(buf))
+	copy(orig, buf)
 	exchanged := ExchangeInt(buf)
-	if len(exchanged) != len(buf) {
+	if len(exchanged) != len(orig) {
 		t.Error("ExchangeInt len mismatch")
 	}
-	if bytes.Equal(exchanged, buf) {
+	if bytes.Equal(exchanged, orig) {
 		t.Error("ExchangeInt should change data")
 	}
 
 	// HashInt
-	hashed := HashInt(buf, []byte("key"))
+	hashed := HashInt(buf)
 	if len(hashed) == 0 {
 		t.Error("HashInt failed")
 	}

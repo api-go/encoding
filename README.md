@@ -41,7 +41,8 @@
 - `func DecodeInt(buf []byte) uint64`
 - `func FillInt(buf []byte, length int) []byte`
 - `func ExchangeInt(buf []byte) []byte`
-- `func HashInt(data []byte, key []byte) []byte`
+- `func HashInt(buf []byte) []byte`
+- `func FoldInt(buf []byte, length int) []byte`
 
 ## 📦 安装
 
