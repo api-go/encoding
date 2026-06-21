@@ -1,5 +1,10 @@
 # Changelog: @go/encoding
 
+## v1.5.4 (2026-06-21)
+- **重构与错误堆栈支持**:
+  - 重构 `js_export.go`，将 `EncodeInt` 等匿名包装以及 `UnHex`/`UnBase64`/`UnURLBase64`/`UnURLEncode` 直接抛错的 Go 接口重写为具名函数，并动态使用 `jsmod.MakeError` 包裹错误。
+  - 升级 `jsmod` 依赖至 v1.5.3，`cast` 依赖至 v1.5.3。
+
 ## v1.5.3 (2026-06-11)
 - **依赖对齐**: 升级 `jsmod` 依赖至 v1.5.2，升级 `cast` 依赖至 v1.5.2。
 
