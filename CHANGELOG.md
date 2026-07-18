@@ -1,5 +1,8 @@
 # Changelog: @go/encoding
 
+## v1.5.6 (2026-07-18)
+- **依赖校验修复**: 更新 `go.sum` 为当前可验证的依赖 checksum。
+
 ## v1.5.5 (2026-06-22)
 - **安全与防碰撞重构 (In-place & Non-linear)**:
   - 修复 `ExchangeInt` 变成就地修改并写回，解决了 ordered 模式下混淆被完全丢弃的回归 Bug。使用栈分配优化了 `size <= 20` 时的无逃逸零拷贝性能。
