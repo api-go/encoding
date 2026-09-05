@@ -81,7 +81,7 @@ func TestSortJoin(t *testing.T) {
 	}
 	u := User{ID: 1, Name: "sam"}
 	resStruct := SortJoin(u, ";", ":", false)
-	if resStruct != "ID:1;name:sam" {
+	if resStruct != "id:1;name:sam" {
 		t.Errorf("SortJoin struct failed: %s", resStruct)
 	}
 }

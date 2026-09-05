@@ -1,5 +1,9 @@
 # Changelog: @go/encoding
 
+## v1.5.7 (2026-09-05)
+- **依赖对齐**: 升级 `cast` 至 `v1.5.6`、`jsmod` 至 `v1.5.4`、`rand` 至 `v1.5.4`。
+- **字段命名统一**: `SortJoin` 的 Struct 字段使用统一 lowerCamelCase，连续大写字段 `ID` 输出为 `id`；依赖旧签名文本的调用方需同步更新。
+
 ## v1.5.6 (2026-07-18)
 - **依赖校验修复**: 更新 `go.sum` 为当前可验证的依赖 checksum。
 
