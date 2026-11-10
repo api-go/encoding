@@ -3,7 +3,7 @@ package encoding_test
 import (
 	"testing"
 
-	"apigo.cc/go/encoding"
+	"github.com/api-go/encoding"
 )
 
 func BenchmarkHexEncode(b *testing.B) {

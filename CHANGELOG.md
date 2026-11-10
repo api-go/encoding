@@ -1,3 +1,7 @@
+## [v1.5.9] - 2026-11-10
+
+- 迁移至 github.com/api-go/encoding，同步内部模块路径与依赖。
+
 # Changelog: @go/encoding
 
 ## v1.5.7 (2026-09-05)
@@ -55,7 +59,7 @@
 
 ### Added
 - **API 补全**：新增 `UnHexFromString`、`UnBase64FromString`、`UnUrlBase64FromString` 与 `UnUrlEncode` 异步错误返回版本。
-- **依赖对齐**：引入 `apigo.cc/go/cast` 依赖以支持消除摩擦能力。
+- **依赖对齐**：引入 `github.com/api-go/cast` 依赖以支持消除摩擦能力。
 
 ## [v1.0.5] - 2026-05-01
 - (同步版本号)

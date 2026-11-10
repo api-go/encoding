@@ -47,15 +47,15 @@
 ## 📦 安装
 
 ```bash
-go get apigo.cc/go/encoding
+go get github.com/api-go/encoding
 ```
 
 ## 💡 示例 (配合 cast.As 消除摩擦)
 
 ```go
 import (
-    "apigo.cc/go/encoding"
-    "apigo.cc/go/cast"
+    "github.com/api-go/encoding"
+    "github.com/api-go/cast"
 )
 
 // 配合 cast.As 替代原有的 MustUnHex 系列

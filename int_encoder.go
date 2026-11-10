@@ -3,8 +3,8 @@ package encoding
 import (
 	"errors"
 
-	"apigo.cc/go/cast"
-	"apigo.cc/go/rand"
+	"github.com/api-go/cast"
+	"github.com/api-go/rand"
 )
 
 // IntEncoder 提供整数与字节切片之间的自定义进制转换

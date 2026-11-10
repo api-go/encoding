@@ -1,6 +1,6 @@
 package encoding
 
-import "apigo.cc/go/jsmod"
+import "github.com/api-go/jsmod"
 
 func init() {
 	jsmod.Register("encoding", map[string]any{

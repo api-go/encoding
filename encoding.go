@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"apigo.cc/go/cast"
+	"github.com/api-go/cast"
 )
 
 // Hex 将数据转换为 Hex 编码的字符串
